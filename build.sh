@@ -116,7 +116,7 @@ then
   autoreconf -i
 
   cd "$build_dir"
-  "$top_dir/configure" -q
+  "$top_dir/configure -prefix /boot/home/config/non-packaged " -q
 fi
 
 #===========   do the build   =====================
