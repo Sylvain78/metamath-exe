@@ -23,7 +23,7 @@ For Unix/Linux/Cygwin/MacOSX using the gcc compiler, compile with the command
 "cd src && gcc m*.c -o metamath", then type "./metamath set.mm" to run.
 
 As an alternative, if you have autoconf, automake, and a C compiler, you can
-compile with the command "cd src && autoreconf -i && ./configure && make".
+compile with the command "autoreconf -i && ./configure && make".
 This "autoconf" approach automatically finds your compiler and its options, and
 configure takes the usual options (e.g., "--prefix=/usr").  The resulting
 executable will typically be faster because it will check for and enable
