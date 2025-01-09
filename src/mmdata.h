@@ -82,8 +82,6 @@
  *   enables memory logging
  * - SET MEMORY_STATUS OFF\n
  *   disables memory debugging
- * - SET DEBUG FLAG 9\n
- *   (deprecated) enables memory logging
  * - SET DEBUG OFF\n
  *   disables memory logging in conjunction with other debugging aid.
  */

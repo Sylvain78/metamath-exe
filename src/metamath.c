@@ -6226,7 +6226,6 @@ void command(int argc, char *argv[]) {
       if (i == 6) db6 = 1; // mmunif.c details
       if (i == 7) db7 = 1; // mmunif.c more details; mmveri.c
       if (i == 8) db8 = 1; // mmpfas.c unification calls
-      if (i == 9) db9 = 1; // memory // use SET MEMORY_STATUS ON instead
       continue;
     }
     if (cmdMatches("SET DEBUG OFF")) {
