@@ -441,11 +441,6 @@ flag print2(const char* fmt, ...) {
 #endif
   }
 
-  if (g_listMode && g_listFile_fp != NULL && !g_outputToString) {
-    // Put line in list.tmp as comment
-    fprintf(g_listFile_fp, "! %s", printBuffer); // Print to list command file
-  }
-
   if (g_outputToString) {
 
 // step (11) redirect output to a string
@@ -932,11 +927,6 @@ vstring cmdInput1(const char *ask) {
       let((vstring *)(&(backBuffer[backBufferPos - 1])), cat(
           (vstring)(backBuffer[backBufferPos - 1]), ask1,
           commandLn, "\n", NULL));
-
-      if (g_listMode && g_listFile_fp != NULL) {
-        // Put line in list.tmp as comment
-        fprintf(g_listFile_fp, "! %s\n", commandLn);
-      }
     } else { // Get line from SUBMIT file
       commandLn = cmdInput(g_commandFilePtr[g_commandFileNestingLevel], NULL);
       if (!commandLn) { // EOF found

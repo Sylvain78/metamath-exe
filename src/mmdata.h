@@ -97,17 +97,6 @@
 typedef char flag;
 
 /*!
- * \var g_listMode
- * \deprecated
- * Obsolete.  Now fixed to 0.  Historically the metamath sources were also used
- * for other purposes than maintaining Metamath files.  One such application, a
- * standalone text processor, was LIST.EXE.  The sources still query this
- * \ref flag occasionally, but its value is in fact fixed to 0 in metamath,
- * meaning the LIST.EXE functionality is an integral part of metamath now.
- */
-extern flag g_listMode; // 0 = metamath, 1 = list utility
-
-/*!
  * \var g_toolsMode
  * Metamath has two modes of operation: In its primary mode it handles
  * mathematical contents like proofs.  In this mode \ref g_toolsMode  is set to

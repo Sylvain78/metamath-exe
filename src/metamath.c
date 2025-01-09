@@ -738,24 +738,8 @@ int main(int argc, char *argv[]) {
   // you never get here
 #endif
 
-  // ******** If g_listMode is set to 1 here, the startup will be Text
-  //          Tools utilities, and Metamath will be disabled *********
-
-  // (Historically, this mode was used for the creation of a stand-alone
-  // "TOOLS>" utility for people not interested in Metamath.  This utility
-  // was named "LIST.EXE", "tools.exe", and "tools" on VMS, DOS, and Unix
-  // platforms respectively.  The UPDATE command of TOOLS (mmword.c) was
-  // custom-written in accordance with the version control requirements of a
-  // company that used it; it documents the differences between two versions
-  // of a program as C-style comments embedded in the newer version.)
-  g_listMode = 0; // Force Metamath mode as startup
-
-  g_toolsMode = g_listMode;
-
-  if (!g_listMode) {
-    // print2("Metamath - Version %s\n", MVERSION);
-    print2("Metamath - Version %s%s", MVERSION, space(27 - (long)strlen(MVERSION)));
-  }
+  // print2("Metamath - Version %s\n", MVERSION);
+  print2("Metamath - Version %s%s", MVERSION, space(27 - (long)strlen(MVERSION)));
   print2("Type HELP for help, EXIT to exit.\n");
 
   // Allocate big arrays
@@ -766,11 +750,6 @@ int main(int argc, char *argv[]) {
 
   // Process a command line until EXIT
   command(argc, argv);
-
-  // Close logging command file
-  if (g_listMode && g_listFile_fp != NULL) {
-    fclose(g_listFile_fp);
-  }
 
   return 0;
 }
@@ -940,14 +919,6 @@ void command(int argc, char *argv[]) {
 
   while (1) {
 
-    if (g_listMode) {
-      // If called from the OS shell with arguments, do one command
-      // then exit program.
-      // (However, let a SUBMIT job complete)
-      if (argc > 1 && commandProcessedFlag &&
-             g_commandFileNestingLevel == 0) return;
-    }
-
     g_errorCount = 0; // Reset error count before each read or proof parse
 
     // Deallocate stuff that may have been used in previous pass
@@ -1003,57 +974,28 @@ void command(int argc, char *argv[]) {
         let(&g_commandPrompt,"MM> ");
       }
     } else {
-      if (g_listMode) {
-        let(&g_commandPrompt,"Tools> ");
-      } else {
-        let(&g_commandPrompt,"TOOLS> ");
-      }
+      let(&g_commandPrompt,"TOOLS> ");
     }
 
     free_vstring(g_commandLine); // Deallocate previous contents
 
     if (!commandProcessedFlag && argc > 1 && argsProcessed < argc - 1
         && g_commandFileNestingLevel == 0) {
-      if (g_listMode) {
-        // If program was compiled in TOOLS mode, the command-line argument
-        // is assumed to be a single TOOLS command; build the equivalent
-        // TOOLS command.
-        for (i = 1; i < argc; i++) {
-          argsProcessed++;
-          // Put quotes around an argument with spaces or tabs or quotes
-          // or empty string.
-          if (instr(1, argv[i], " ") || instr(1, argv[i], "\t")
-              || instr(1, argv[i], "\"") || instr(1, argv[i], "'")
-              || (argv[i])[0] == 0) {
-            // If it contains a double quote, use a single quote
-            if (instr(1, argv[i], "\"")) {
-              let(&str1, cat("'", argv[i], "'", NULL));
-            } else {
-              // (??? (TODO)Case of both ' and " is not handled)
-              let(&str1, cat("\"", argv[i], "\"", NULL));
-            }
-          } else {
-            let(&str1, argv[i]);
-          }
-          let(&g_commandLine, cat(g_commandLine, (i == 1) ? "" : " ", str1, NULL));
-        }
-      } else {
-        // If program was compiled in default (Metamath) mode, each command-line
-        // argument is considered a full Metamath command.  User is responsible
-        // for ensuring necessary quotes around arguments are passed in.
-        argsProcessed++;
-        g_scrollMode = 0; // Set continuous scrolling until completed
-        let(&g_commandLine, cat(g_commandLine, argv[argsProcessed], NULL));
-        if (argc == 2 && instr(1, argv[1], " ") == 0) {
-          // Assume the user intended a READ command.  This special mode allows
-          // invocation via "metamath xxx.mm".
-          if (instr(1, g_commandLine, "\"") || instr(1, g_commandLine, "'")) {
-            // If it already has quotes don't put quotes
-            let(&g_commandLine, cat("READ ", g_commandLine, NULL));
-          } else {
-            // Put quotes so / won't be interpreted as qualifier separator
-            let(&g_commandLine, cat("READ \"", g_commandLine, "\"", NULL));
-          }
+      // If program was compiled in default (Metamath) mode, each command-line
+      // argument is considered a full Metamath command.  User is responsible
+      // for ensuring necessary quotes around arguments are passed in.
+      argsProcessed++;
+      g_scrollMode = 0; // Set continuous scrolling until completed
+      let(&g_commandLine, cat(g_commandLine, argv[argsProcessed], NULL));
+      if (argc == 2 && instr(1, argv[1], " ") == 0) {
+        // Assume the user intended a READ command.  This special mode allows
+        // invocation via "metamath xxx.mm".
+        if (instr(1, g_commandLine, "\"") || instr(1, g_commandLine, "'")) {
+          // If it already has quotes don't put quotes
+          let(&g_commandLine, cat("READ ", g_commandLine, NULL));
+        } else {
+          // Put quotes so / won't be interpreted as qualifier separator
+          let(&g_commandLine, cat("READ \"", g_commandLine, "\"", NULL));
         }
       }
       print2("%s\n", cat(g_commandPrompt, g_commandLine, NULL));
@@ -1185,10 +1127,10 @@ void command(int argc, char *argv[]) {
       // MM-PA wasn't entered) instead of exiting metamath.
       if (cmdMatches("_EXIT_PA")) {
         // mmcmdl.c should have caught this.
-        if (!g_PFASmode || (g_toolsMode && !g_listMode)) bug(1127);
+        if (!g_PFASmode || (g_toolsMode)) bug(1127);
       }
 
-      if (g_toolsMode && !g_listMode) {
+      if (g_toolsMode) {
         // Quitting tools command from within Metamath
         if (!g_PFASmode) {
           print2(
